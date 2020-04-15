@@ -9,7 +9,7 @@
 import UIKit
 import RealmSwift
 
-class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
     
 
     @IBOutlet weak var table: UITableView!
@@ -23,11 +23,15 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     var dateTextField = UITextField()
     var datePicker = UIDatePicker()
     
+    var searchBar: UISearchBar!
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         loadCategories()
+        
+        setSearchBar()
         
     }
     
@@ -36,6 +40,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         super.viewWillAppear(animated)
         table.reloadData()
     }
+
     
     
     // MARK: - tableView
@@ -84,6 +89,37 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         return configulation
 
     }
+    
+    //MARK: - Search Bar
+    
+    func setSearchBar() {
+        
+        if let navigationBarFrame = navigationController?.navigationBar.bounds {
+            
+            let searchBar: UISearchBar = UISearchBar(frame: navigationBarFrame)
+            searchBar.delegate = self
+            searchBar.placeholder = "タイトルで探す"
+            searchBar.tintColor = UIColor.gray
+            searchBar.keyboardType = UIKeyboardType.default
+            navigationItem.titleView = searchBar
+            navigationItem.titleView?.frame = searchBar.frame
+            self.searchBar = searchBar
+
+        }
+
+    }
+    
+    func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
+        searchBar.showsCancelButton = true
+        return true
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = false
+        searchBar.resignFirstResponder()
+    }
+    
+    
 
     
     //MARK: - Data Manipulation Methods
