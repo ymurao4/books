@@ -11,9 +11,8 @@ import RealmSwift
 
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
+
     @IBOutlet weak var table: UITableView!
-    
-    
     
     let realm = try! Realm()
     
@@ -21,6 +20,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     var titleTextField = UITextField()
     var authorTextField = UITextField()
+    var dateTextField = UITextField()
+    var datePicker = UIDatePicker()
     
 
     override func viewDidLoad() {
@@ -37,19 +38,20 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     
+    // MARK: - tableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return books?.count ?? 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CustomTableViewCell
 
         if let book = books?[indexPath.row] {
             
-            cell.textLabel?.text = book.title
-            cell.detailTextLabel?.text = book.authorName
-
+            cell.titleLabel?.text = book.title
+            cell.authorLabel?.text = book.authorName
+            cell.dateLabel?.text = book.date
 
         }
     
@@ -60,6 +62,29 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+
+        let action =  UIContextualAction(style: .destructive, title: nil, handler: { (_, _, completionHandler ) in
+
+            self.delete(at: indexPath)
+            self.table.reloadData()
+            completionHandler(true)
+        })
+
+        action.image = UIImage(named: "delete-icon")
+        action.backgroundColor = .red
+        let configulation = UISwipeActionsConfiguration(actions: [action])
+
+        return configulation
+
+    }
+
     
     //MARK: - Data Manipulation Methods
     
@@ -85,6 +110,20 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 
     }
     
+    func delete(at IndexPath: IndexPath) {
+        
+        if let bookForDeletion = self.books?[IndexPath.row] {
+            do {
+                try self.realm.write {
+                    self.realm.delete(bookForDeletion)
+                }
+            } catch {
+                print("Error deleting item, \(error)")
+            }
+        }
+
+    }
+    
     func displayAddField(message: String) {
         
         // Create alert
@@ -103,13 +142,15 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 
             // validation
             if ((self.titleTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)!
-                || (self.authorTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)!)
+                || (self.authorTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)!
+                || (self.dateTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)!)
             {
                 
                 self.titleTextField.text = ""
                 self.authorTextField.text = ""
+                self.dateTextField.text = ""
                 
-                self.displayAddField(message: "タイトル、作家を入力してください。")
+                self.displayAddField(message: "タイトル、作家、日付を入力してください。")
                 
                 return
 
@@ -118,6 +159,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 
             newBook.title = self.titleTextField.text!
             newBook.authorName = self.authorTextField.text!
+            newBook.date = self.dateTextField.text!
 
             
             self.save(book: newBook)
@@ -126,16 +168,31 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "タイトルを入力"
+            alertTextField.addConstraint(alertTextField.heightAnchor.constraint(equalToConstant: 20))
             self.titleTextField = alertTextField
-            
         }
-        
+
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "作家を入力"
+            alertTextField.addConstraint(alertTextField.heightAnchor.constraint(equalToConstant: 20))
             self.authorTextField = alertTextField
 
         }
         
+        
+        alert.addTextField { (alertTextField) in
+            
+            alertTextField.addConstraint(alertTextField.heightAnchor.constraint(equalToConstant: 20))
+            self.dateTextField = alertTextField
+            self.dateTextField.placeholder = "日付を選択"
+            self.datePicker.datePickerMode = UIDatePicker.Mode.date
+            self.datePicker.timeZone = NSTimeZone.local
+            self.datePicker.locale = Locale.current
+            self.dateTextField.inputView = self.datePicker
+            self.setupToolbar()
+            
+        }
+
         
         alert.addAction(action)
         alert.addAction(cancel)
@@ -143,6 +200,32 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         present(alert, animated: true, completion: nil)
         
         
+    }
+    
+    func setupToolbar() {
+        
+        let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 42))
+        let cancelItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
+        toolbar.setItems([cancelItem, spaceButton,doneItem], animated: true)
+        dateTextField.inputAccessoryView = toolbar
+
+    }
+    
+    @objc func done() {
+        
+        dateTextField.endEditing(true)
+        
+        let formatter = DateFormatter()
+        
+        formatter.dateFormat = "yyyy/MM/dd"
+        dateTextField.text = "\(formatter.string(from: datePicker.date))"
+
+    }
+    
+    @objc func cancel() {
+        dateTextField.endEditing(true)
     }
     
     

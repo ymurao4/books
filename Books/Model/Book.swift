@@ -12,5 +12,5 @@ import RealmSwift
 class Book: Object {
     @objc dynamic var authorName = ""
     @objc dynamic var title = ""
-    
+    @objc dynamic var date = ""
 }
