@@ -9,7 +9,7 @@
 import UIKit
 import RealmSwift
 
-class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
+class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
 
     @IBOutlet weak var table: UITableView!
@@ -18,20 +18,19 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     var books: Results<Book>?
     
-    var titleTextField = UITextField()
-    var authorTextField = UITextField()
-    var dateTextField = UITextField()
-    var datePicker = UIDatePicker()
     
-    var searchBar: UISearchBar!
-    
+    private var titleTextField = UITextField()
+    private var authorTextField = UITextField()
+    private var dateTextField = UITextField()
+    private var datePicker = UIDatePicker()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        loadCategories()
+        table.dataSource = self
+        table.delegate = self
         
-        setSearchBar()
+        loadItems()
         
     }
     
@@ -57,7 +56,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             cell.titleLabel?.text = book.title
             cell.authorLabel?.text = book.authorName
             cell.dateLabel?.text = book.date
-
+            
         }
     
         return cell
@@ -65,7 +64,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
+        return tableView.deselectRow(at: indexPath, animated: true)
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -90,36 +89,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 
     }
     
-    //MARK: - Search Bar
-    
-    func setSearchBar() {
-        
-        if let navigationBarFrame = navigationController?.navigationBar.bounds {
-            
-            let searchBar: UISearchBar = UISearchBar(frame: navigationBarFrame)
-            searchBar.delegate = self
-            searchBar.placeholder = "タイトルで探す"
-            searchBar.tintColor = UIColor.gray
-            searchBar.keyboardType = UIKeyboardType.default
-            navigationItem.titleView = searchBar
-            navigationItem.titleView?.frame = searchBar.frame
-            self.searchBar = searchBar
-
-        }
-
-    }
-    
-    func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
-        searchBar.showsCancelButton = true
-        return true
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.showsCancelButton = false
-        searchBar.resignFirstResponder()
-    }
-    
-    
 
     
     //MARK: - Data Manipulation Methods
@@ -138,9 +107,19 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
     }
     
-    func loadCategories() {
+    func updateModel(book: Book) {
+        
+        try! realm.write {
+            
+            realm.add(book, update: .modified)
+        }
 
-        books = realm.objects(Book.self)
+    }
+    
+    
+    func loadItems() {
+
+        books = realm.objects(Book.self).sorted(byKeyPath: "date", ascending: false)
         
         table.reloadData()
 
@@ -148,10 +127,10 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     func delete(at IndexPath: IndexPath) {
         
-        if let bookForDeletion = self.books?[IndexPath.row] {
+        if let books = self.books?[IndexPath.row] {
             do {
                 try self.realm.write {
-                    self.realm.delete(bookForDeletion)
+                    self.realm.delete(books)
                 }
             } catch {
                 print("Error deleting item, \(error)")
@@ -160,6 +139,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 
     }
     
+
+    
     func displayAddField(message: String) {
         
         // Create alert
@@ -167,7 +148,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         // Create cancel button
         let cancel = UIAlertAction(title: "取り消し", style: .cancel, handler: nil)
-        
+
         // Create saveButton
         let action = UIAlertAction(title: "登録", style: .default) { (action) in
             
@@ -175,7 +156,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             
             let newBook = Book()
             
-
             // validation
             if ((self.titleTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)!
                 || (self.authorTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)!
@@ -196,10 +176,11 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             newBook.title = self.titleTextField.text!
             newBook.authorName = self.authorTextField.text!
             newBook.date = self.dateTextField.text!
-
+            newBook.dateCreated = Date()
+            newBook.id = NSUUID().uuidString
             
             self.save(book: newBook)
-            
+
         }
         
         alert.addTextField { (alertTextField) in
@@ -264,11 +245,22 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         dateTextField.endEditing(true)
     }
     
+
+    //MARK: - Search Methods
+    func filterKeyword(_ searchBar: UISearchBar) {
+            
+        if let text = searchBar.text {
+            books = books?.filter("title CONTAINS[cd] %@ OR authorName CONTAINS[cd] %@", text, text).sorted(byKeyPath: "date", ascending: false)
+            table.reloadData()
+        }
+        
+    }
     
-    @IBAction func addBook(_ sender: UIBarButtonItem) {
-
-        displayAddField(message: "読んだ本を登録")
-
+    
+    func cancelSearchBar(_ sesarchBar: UISearchBar) {
+        
+        loadItems()
+        
     }
     
 
