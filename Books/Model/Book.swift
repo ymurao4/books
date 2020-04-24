@@ -13,4 +13,11 @@ class Book: Object {
     @objc dynamic var authorName = ""
     @objc dynamic var title = ""
     @objc dynamic var date = ""
+    @objc dynamic var dateCreated: Date?
+    @objc dynamic var id = ""
+    
+    override static func primaryKey() -> String? {
+        return "id"
+    }
+    
 }
