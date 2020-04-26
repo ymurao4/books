@@ -14,15 +14,22 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 
     @IBOutlet weak var table: UITableView!
     
+    @IBOutlet weak var dateButtonLabel: UIButton!
+    @IBOutlet weak var titleButtonLabel: UIButton!
+    @IBOutlet weak var authorButtonLabel: UIButton!
+    
     let realm = try! Realm()
     
     var books: Results<Book>?
     
+    private var flag: Bool = false
     
     private var titleTextField = UITextField()
     private var authorTextField = UITextField()
     private var dateTextField = UITextField()
     private var datePicker = UIDatePicker()
+    
+    private let borderColor:UIColor = UIColor(red: 0, green: 122 / 255, blue: 1, alpha: 1)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,8 +37,17 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         table.dataSource = self
         table.delegate = self
         
-        loadItems()
-        
+        loadItems(sortText: "date")
+
+    }
+
+    override func viewDidLayoutSubviews() {
+        dateButtonLabel.layer.borderWidth = 1
+        dateButtonLabel.layer.borderColor = borderColor.cgColor
+        titleButtonLabel.addBorder(width: 1, color: borderColor, position: .top)
+        titleButtonLabel.addBorder(width: 1, color: borderColor, position: .bottom)
+        authorButtonLabel.layer.borderWidth = 1
+        authorButtonLabel.layer.borderColor = borderColor.cgColor
     }
     
     
@@ -116,15 +132,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 
     }
     
-    
-    func loadItems() {
-
-        books = realm.objects(Book.self).sorted(byKeyPath: "date", ascending: false)
-        
-        table.reloadData()
-
-    }
-    
     func delete(at IndexPath: IndexPath) {
         
         if let books = self.books?[IndexPath.row] {
@@ -166,7 +173,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 self.authorTextField.text = ""
                 self.dateTextField.text = ""
                 
-                self.displayAddField(message: "タイトル、作家、日付を入力してください。")
+                self.displayAddField(message: "タイトル、著者、日付を入力してください。")
                 
                 return
 
@@ -190,7 +197,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
 
         alert.addTextField { (alertTextField) in
-            alertTextField.placeholder = "作家を入力"
+            alertTextField.placeholder = "著者を入力"
             alertTextField.addConstraint(alertTextField.heightAnchor.constraint(equalToConstant: 20))
             self.authorTextField = alertTextField
 
@@ -245,10 +252,19 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         dateTextField.endEditing(true)
     }
     
+    
+    func loadItems(sortText: String) {
+
+        books = realm.objects(Book.self).sorted(byKeyPath: sortText, ascending: flag)
+        
+        table.reloadData()
+
+    }
+    
 
     //MARK: - Search Methods
     func filterKeyword(_ searchBar: UISearchBar) {
-            
+        
         if let text = searchBar.text {
             books = books?.filter("title CONTAINS[cd] %@ OR authorName CONTAINS[cd] %@", text, text).sorted(byKeyPath: "date", ascending: false)
             table.reloadData()
@@ -259,10 +275,70 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     func cancelSearchBar(_ sesarchBar: UISearchBar) {
         
-        loadItems()
+        loadItems(sortText: "date")
         
     }
     
-
+    func switchFlag(_ f: Bool) {
+        flag = f ? false : true
+    }
+    
+    
+    // MARK: - Sort Methods
+    
+    @IBAction func pressDateButton(_ sender: Any) {
+        switchFlag(flag)
+        loadItems(sortText: "date")
+    }
+    
+    @IBAction func pressTitleButton(_ sender: Any) {
+        switchFlag(flag)
+        loadItems(sortText: "title")
+    }
+    
+    @IBAction func pressAuthorButton(_ sender: Any) {
+        switchFlag(flag)
+        loadItems(sortText: "authorName")
+    }
+    
 }
 
+
+
+// MARK: - set borders
+
+enum BorderPosition {
+    case top
+    case left
+    case right
+    case bottom
+}
+
+extension UIView {
+    
+    func addBorder(width: CGFloat, color: UIColor, position: BorderPosition) {
+        
+        let border = CALayer()
+        
+        switch position {
+        case .top:
+            border.frame = CGRect(x: 0, y: 0, width: self.frame.width, height: width)
+            border.backgroundColor = color.cgColor
+            self.layer.addSublayer(border)
+        case .left:
+            border.frame = CGRect(x: 0, y: 0, width: width, height: self.frame.height)
+            border.backgroundColor = color.cgColor
+            self.layer.addSublayer(border)
+        case .right:
+            border.frame = CGRect(x: self.frame.width - width, y: 0, width: width, height: self.frame.height)
+            border.backgroundColor = color.cgColor
+            self.layer.addSublayer(border)
+        case .bottom:
+            border.frame = CGRect(x: 0, y: self.frame.height - width, width: self.frame.width, height: width)
+            border.backgroundColor = color.cgColor
+            self.layer.addSublayer(border)
+        }
+
+    }
+
+}

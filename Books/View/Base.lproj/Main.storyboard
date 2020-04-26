@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="YSG-kZ-Jpb">
-                                <rect key="frame" x="0.0" y="44" width="414" height="764"/>
+                                <rect key="frame" x="0.0" y="93" width="414" height="715"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" id="xSO-a1-YU7" customClass="CustomTableViewCell" customModule="Books" customModuleProvider="target">
@@ -36,7 +36,7 @@
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8kf-lz-LMG">
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8kf-lz-LMG">
                                                             <rect key="frame" x="127.5" y="0.0" width="119" height="21"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                             <nil key="textColor"/>
@@ -70,24 +70,56 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="hUU-Dw-KDQ"/>
                                 </connections>
                             </tableView>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="0fd-1a-xmN">
+                                <rect key="frame" x="30" y="49" width="354" height="30"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CFy-QX-pUu">
+                                        <rect key="frame" x="0.0" y="0.0" width="118" height="30"/>
+                                        <state key="normal" title="日付"/>
+                                        <connections>
+                                            <action selector="pressDateButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="a3c-IF-YRX"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9cZ-RV-vd0">
+                                        <rect key="frame" x="118" y="0.0" width="118" height="30"/>
+                                        <state key="normal" title="タイトル"/>
+                                        <connections>
+                                            <action selector="pressTitleButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="00T-V6-LKD"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="S4a-Lm-4qC">
+                                        <rect key="frame" x="236" y="0.0" width="118" height="30"/>
+                                        <state key="normal" title="著者"/>
+                                        <connections>
+                                            <action selector="pressAuthorButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="69U-g7-DL9"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
+                            <constraint firstItem="0fd-1a-xmN" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="5" id="4iN-PK-sEW"/>
                             <constraint firstItem="YSG-kZ-Jpb" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailing" id="Fgj-Nj-eqO"/>
                             <constraint firstItem="YSG-kZ-Jpb" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="PfF-Bj-NcD"/>
-                            <constraint firstItem="YSG-kZ-Jpb" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="ibK-ad-Bem"/>
+                            <constraint firstItem="0fd-1a-xmN" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="30" id="rzQ-ti-LLs"/>
                             <constraint firstAttribute="bottom" secondItem="YSG-kZ-Jpb" secondAttribute="bottom" id="wgo-Vs-aaQ"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="0fd-1a-xmN" secondAttribute="trailing" constant="30" id="xTa-2b-Uzh"/>
+                            <constraint firstItem="YSG-kZ-Jpb" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="49" id="y31-PY-Xzh"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
+                        <outlet property="authorButtonLabel" destination="S4a-Lm-4qC" id="yk8-IO-3Rb"/>
+                        <outlet property="dateButtonLabel" destination="CFy-QX-pUu" id="6St-7T-1Qi"/>
                         <outlet property="table" destination="YSG-kZ-Jpb" id="Q05-LR-Klb"/>
+                        <outlet property="titleButtonLabel" destination="9cZ-RV-vd0" id="9n9-ua-5Fi"/>
                         <segue destination="sSc-3b-c1X" kind="show" identifier="goToDetail" id="Bhy-3a-2Qd"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="783" y="186"/>
+            <point key="canvasLocation" x="740.57971014492762" y="167.41071428571428"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="LSX-5f-5EQ">

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		043087C02453B7B6006C88BC /* MyTubBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043087BF2453B7B6006C88BC /* MyTubBarController.swift */; };
 		0476D0ED2447E628004200DF /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0476D0EC2447E628004200DF /* ContainerViewController.swift */; };
 		04A38E97243FF6A200AEBCBD /* CustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A38E96243FF6A200AEBCBD /* CustomTableViewCell.swift */; };
 		04B47B722435749E0016AF27 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B47B712435749E0016AF27 /* AppDelegate.swift */; };
@@ -41,6 +42,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		043087BF2453B7B6006C88BC /* MyTubBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTubBarController.swift; sourceTree = "<group>"; };
 		0476D0EC2447E628004200DF /* ContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerViewController.swift; sourceTree = "<group>"; };
 		04A38E96243FF6A200AEBCBD /* CustomTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTableViewCell.swift; sourceTree = "<group>"; };
 		04B47B6E2435749E0016AF27 /* Books.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Books.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -157,6 +159,7 @@
 			children = (
 				0476D0EC2447E628004200DF /* ContainerViewController.swift */,
 				04FB9FBC243875E90049FD93 /* ViewController.swift */,
+				043087BF2453B7B6006C88BC /* MyTubBarController.swift */,
 				04A38E96243FF6A200AEBCBD /* CustomTableViewCell.swift */,
 			);
 			path = Controller;
@@ -441,6 +444,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				04A38E97243FF6A200AEBCBD /* CustomTableViewCell.swift in Sources */,
+				043087C02453B7B6006C88BC /* MyTubBarController.swift in Sources */,
 				04FB9FBD243875E90049FD93 /* ViewController.swift in Sources */,
 				0476D0ED2447E628004200DF /* ContainerViewController.swift in Sources */,
 				04B47BA824357A560016AF27 /* Book.swift in Sources */,

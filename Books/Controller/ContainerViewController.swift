@@ -31,11 +31,10 @@ class ContainerViewController: UIViewController {
         setupSearchBar()
         
         customizeButton()
-
-        // インクリメンタルサーチ
-//        searchController = UISearchController(searchResultsController: tableViewController)
-//        searchController.searchResultsUpdater = self
-//        definesPresentationContext = true
+        
+        // delete a border under navigation bar
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
 
     }
     
@@ -107,33 +106,6 @@ extension ContainerViewController: UISearchBarDelegate {
         tableViewController.cancelSearchBar(searchBar)
         
     }
-    
-
-// インクリメンタルサーチ
-//    func searchBar(_ searchBar: UISearchBar, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-//
-//        searchController.searchResultsController?.view.isHidden = false
-//
-//        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { [weak self] in
-//            guard let self = self else { return }
-//            if searchBar.text?.count != 0 {
-//                self.tableViewController.filterKeyword(searchBar)
-//            } else {
-//                self.tableViewController.cancelSearchBar(searchBar)
-//            }
-//        }
-//
-//        return true
-//
-//    }
-    
-    //    func updateSearchResults(for searchController: UISearchController) {
-    //        if searchController.searchBar.text! == "" {
-    //            self.tableViewController.cancelSearchBar(searchBar)
-    //        } else {
-    //            self.tableViewController.filterKeyword(searchBar)
-    //        }
-    //    }
 
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -153,11 +125,3 @@ extension ContainerViewController: UISearchBarDelegate {
 
 }
 
-extension ContainerViewController: UITabBarControllerDelegate {
-    
-    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        print("tapped tabbar item")
-    }
-
-
-}
