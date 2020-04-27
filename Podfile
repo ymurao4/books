@@ -10,13 +10,7 @@ target 'Books' do
   # Pods for RealmSwift
   pod 'RealmSwift'
 
-  target 'BooksTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
+  pod 'Cosmos', '~> 21.0'
 
-  target 'BooksUITests' do
-    # Pods for testing
-  end
 
 end

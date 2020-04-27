@@ -49,6 +49,7 @@ class ContainerViewController: UIViewController {
         addButton.layer.shadowRadius = 1
         addButton.layer.shadowOffset = CGSize(width: 1, height: 1)
         addButton.layer.shadowOpacity = 0.5
+        addButton.backgroundColor = tableViewController.dynamicColor
     }
     
     

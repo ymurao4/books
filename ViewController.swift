@@ -8,52 +8,81 @@
 
 import UIKit
 import RealmSwift
+import Cosmos
 
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
 
-    @IBOutlet weak var table: UITableView!
+    @IBOutlet weak var tableView: UITableView!
     
-    @IBOutlet weak var dateButtonLabel: UIButton!
-    @IBOutlet weak var titleButtonLabel: UIButton!
-    @IBOutlet weak var authorButtonLabel: UIButton!
+    @IBOutlet weak var dateButton: UIButton!
+    @IBOutlet weak var titleButton: UIButton!
+    @IBOutlet weak var authorButton: UIButton!
     
     let realm = try! Realm()
     
     var books: Results<Book>?
     
-    private var flag: Bool = false
+    private var dateFlag: Bool = false
+    private var titleFlag: Bool = false
+    private var authorFlag: Bool = false
     
     private var titleTextField = UITextField()
     private var authorTextField = UITextField()
     private var dateTextField = UITextField()
     private var datePicker = UIDatePicker()
+    private var impressionTextField = UITextField()
     
-    private let borderColor:UIColor = UIColor(red: 0, green: 122 / 255, blue: 1, alpha: 1)
+    // change color weather ios 13
+    let dynamicColor = UIColor{ (traitCollection: UITraitCollection) -> UIColor in
+        if traitCollection.userInterfaceStyle == .dark{
+            return UIColor(red: 29 / 255, green: 161 / 255, blue: 242 / 255, alpha: 1)
+        } else {
+            return UIColor(red: 0, green: 122 / 255, blue: 1, alpha: 1)
+        }
+    }
+    
+    let dynamicTintColor = UIColor{ (traitCollection: UITraitCollection) -> UIColor in
+        if traitCollection.userInterfaceStyle == .dark{
+            return UIColor.black
+        } else {
+            return UIColor.white
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        table.dataSource = self
-        table.delegate = self
+        tableView.dataSource = self
+        tableView.delegate = self
         
-        loadItems(sortText: "date")
+        loadItems(sortText: "date", flag: false)
 
     }
 
     override func viewDidLayoutSubviews() {
-        dateButtonLabel.layer.borderWidth = 1
-        dateButtonLabel.layer.borderColor = borderColor.cgColor
-        titleButtonLabel.addBorder(width: 1, color: borderColor, position: .top)
-        titleButtonLabel.addBorder(width: 1, color: borderColor, position: .bottom)
-        authorButtonLabel.layer.borderWidth = 1
-        authorButtonLabel.layer.borderColor = borderColor.cgColor
+        dateButton.layer.borderWidth = 1
+        dateButton.layer.borderColor = dynamicColor.cgColor
+        titleButton.addBorder(width: 1, color: dynamicColor, position: .top)
+        titleButton.addBorder(width: 1, color: dynamicColor, position: .bottom)
+        authorButton.layer.borderWidth = 1
+        authorButton.layer.borderColor = dynamicColor.cgColor
     }
     
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        table.reloadData()
+        tableView.reloadData()
+    }
+    
+    
+    // MARK: - segue
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as! ItemViewController
+        
+        if let indexPath = tableView.indexPathForSelectedRow {
+            destinationVC.selectedBook = books?[indexPath.row]
+        }
     }
 
     
@@ -80,6 +109,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        // segue
+        performSegue(withIdentifier: "goToItems", sender: self)
         return tableView.deselectRow(at: indexPath, animated: true)
     }
     
@@ -93,7 +125,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let action =  UIContextualAction(style: .destructive, title: nil, handler: { (_, _, completionHandler ) in
 
             self.delete(at: indexPath)
-            self.table.reloadData()
+            self.tableView.reloadData()
             completionHandler(true)
         })
 
@@ -119,7 +151,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             print("Error saving book \(error)")
         }
         
-        table.reloadData()
+        tableView.reloadData()
         
     }
     
@@ -186,6 +218,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             newBook.dateCreated = Date()
             newBook.id = NSUUID().uuidString
             
+            
             self.save(book: newBook)
 
         }
@@ -217,6 +250,10 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             
         }
 
+        alert.addTextField { (alertTextField) in
+            alertTextField.placeholder = "感想・メモなど"
+            self.impressionTextField = alertTextField
+        }
         
         alert.addAction(action)
         alert.addAction(cancel)
@@ -253,11 +290,11 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     
     
-    func loadItems(sortText: String) {
+    func loadItems(sortText: String, flag: Bool) {
 
         books = realm.objects(Book.self).sorted(byKeyPath: sortText, ascending: flag)
         
-        table.reloadData()
+        tableView.reloadData()
 
     }
     
@@ -267,7 +304,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         if let text = searchBar.text {
             books = books?.filter("title CONTAINS[cd] %@ OR authorName CONTAINS[cd] %@", text, text).sorted(byKeyPath: "date", ascending: false)
-            table.reloadData()
+            tableView.reloadData()
         }
         
     }
@@ -275,32 +312,84 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     func cancelSearchBar(_ sesarchBar: UISearchBar) {
         
-        loadItems(sortText: "date")
+        loadItems(sortText: "date", flag: false)
         
     }
-    
-    func switchFlag(_ f: Bool) {
-        flag = f ? false : true
+
+    // Switch sortBar color, when sortBar clicked.
+    func switchSortButtonColor(_ button: UIButton) {
+        
+        switch button.tag {
+        case 0:
+            if dateButton.backgroundColor == dynamicColor {
+                dateButton.backgroundColor = dynamicTintColor
+                dateButton.tintColor = dynamicColor
+                dateFlag = false
+                loadItems(sortText: "date", flag: dateFlag)
+            } else {
+                dateButton.backgroundColor = dynamicColor
+                dateButton.tintColor = dynamicTintColor
+                titleButton.backgroundColor = dynamicTintColor
+                titleButton.tintColor = dynamicColor
+                authorButton.backgroundColor = dynamicTintColor
+                authorButton.tintColor = dynamicColor
+                dateFlag = true
+                loadItems(sortText: "date", flag: dateFlag)
+            }
+        case 1:
+            if titleButton.backgroundColor == dynamicColor {
+                titleButton.backgroundColor = dynamicTintColor
+                titleButton.tintColor = dynamicColor
+                titleFlag = false
+                loadItems(sortText: "title", flag: titleFlag)
+            } else {
+                dateButton.backgroundColor = dynamicTintColor
+                dateButton.tintColor = dynamicColor
+                titleButton.backgroundColor = dynamicColor
+                titleButton.tintColor = dynamicTintColor
+                authorButton.backgroundColor = dynamicTintColor
+                authorButton.tintColor = dynamicColor
+                titleFlag = true
+                loadItems(sortText: "title", flag: titleFlag)
+            }
+            
+        case 2:
+            if authorButton.backgroundColor == dynamicColor {
+                authorButton.backgroundColor = dynamicTintColor
+                authorButton.tintColor = dynamicColor
+                authorFlag = false
+                loadItems(sortText: "authorName", flag: authorFlag)
+            } else {
+                dateButton.backgroundColor = dynamicTintColor
+                dateButton.tintColor = dynamicColor
+                titleButton.backgroundColor = dynamicTintColor
+                titleButton.tintColor = dynamicColor
+                authorButton.backgroundColor = dynamicColor
+                authorButton.tintColor = dynamicTintColor
+                authorFlag = true
+                loadItems(sortText: "authorName", flag: authorFlag)
+            }
+        default:
+            print("error")
+        }
+
     }
     
     
     // MARK: - Sort Methods
     
     @IBAction func pressDateButton(_ sender: Any) {
-        switchFlag(flag)
-        loadItems(sortText: "date")
+        switchSortButtonColor(dateButton)
     }
     
     @IBAction func pressTitleButton(_ sender: Any) {
-        switchFlag(flag)
-        loadItems(sortText: "title")
+        switchSortButtonColor(titleButton)
     }
     
     @IBAction func pressAuthorButton(_ sender: Any) {
-        switchFlag(flag)
-        loadItems(sortText: "authorName")
+        switchSortButtonColor(authorButton)
     }
-    
+
 }
 
 
@@ -342,3 +431,7 @@ extension UIView {
     }
 
 }
+
+
+
+
