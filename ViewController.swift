@@ -12,6 +12,15 @@ import Cosmos
 
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
+    lazy var cosmosView: CosmosView = {
+        var view = CosmosView()
+        view.settings.starSize = 30
+        view.settings.fillMode = .full
+        view.settings.updateOnTouch = true
+        view.settings.filledColor = UIColor(red: 255 / 255, green: 193 / 255, blue: 77 / 255, alpha: 0.7)
+        
+        return view
+    }()
 
     @IBOutlet weak var tableView: UITableView!
     
@@ -217,7 +226,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             newBook.date = self.dateTextField.text!
             newBook.dateCreated = Date()
             newBook.id = NSUUID().uuidString
-            
+            newBook.rating = self.cosmosView.rating
             
             self.save(book: newBook)
 
@@ -254,6 +263,13 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             alertTextField.placeholder = "感想・メモなど"
             self.impressionTextField = alertTextField
         }
+        
+        // rating
+        alert.addTextField { (alertTextField) in
+            alertTextField.addConstraint(alertTextField.heightAnchor.constraint(equalToConstant: 30))
+            alertTextField.addSubview(self.cosmosView)
+        }
+        
         
         alert.addAction(action)
         alert.addAction(cancel)

@@ -15,7 +15,7 @@ class Book: Object {
     @objc dynamic var date = ""
     @objc dynamic var dateCreated: Date?
     @objc dynamic var id = ""
-    @objc dynamic var rating: Int = 0
+    @objc dynamic var rating: Double = 0.0
     @objc dynamic var impression: String = ""
     
     override static func primaryKey() -> String? {
