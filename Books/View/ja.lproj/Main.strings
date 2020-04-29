@@ -1,0 +1,45 @@
+
+/* Class = "UILabel"; text = "タイトル"; ObjectID = "0Ud-sy-joW"; */
+"0Ud-sy-joW.text" = "タイトル";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "4oB-p4-MhE"; */
+"4oB-p4-MhE.text" = "Label";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "8kf-lz-LMG"; */
+"8kf-lz-LMG.text" = "Label";
+
+/* Class = "UIButton"; normalTitle = "タイトル"; ObjectID = "9cZ-RV-vd0"; */
+"9cZ-RV-vd0.normalTitle" = "タイトル";
+
+/* Class = "UILabel"; text = "日付"; ObjectID = "AUp-bW-43z"; */
+"AUp-bW-43z.text" = "日付";
+
+/* Class = "UIButton"; normalTitle = "日付"; ObjectID = "CFy-QX-pUu"; */
+"CFy-QX-pUu.normalTitle" = "日付";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "LrK-Nn-WHE"; */
+"LrK-Nn-WHE.text" = "Label";
+
+/* Class = "UIButton"; normalTitle = "著者"; ObjectID = "S4a-Lm-4qC"; */
+"S4a-Lm-4qC.normalTitle" = "著者";
+
+/* Class = "UILabel"; text = "評価"; ObjectID = "e7c-Gp-Hz5"; */
+"e7c-Gp-Hz5.text" = "評価";
+
+/* Class = "UILabel"; text = "著者"; ObjectID = "gr7-U2-tWA"; */
+"gr7-U2-tWA.text" = "著者";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "iBO-bt-pgC"; */
+"iBO-bt-pgC.text" = "Label";
+
+/* Class = "UIBarButtonItem"; title = "戻る"; ObjectID = "kfk-ro-1dA"; */
+"kfk-ro-1dA.title" = "戻る";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "lUt-5r-X8E"; */
+"lUt-5r-X8E.text" = "Label";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "p6V-Hv-M7y"; */
+"p6V-Hv-M7y.text" = "Label";
+
+/* Class = "UIButton"; normalTitle = "+"; ObjectID = "wr8-E2-KeT"; */
+"wr8-E2-KeT.normalTitle" = "+";
