@@ -258,11 +258,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             self.setupToolbar()
             
         }
-
-        alert.addTextField { (alertTextField) in
-            alertTextField.placeholder = "感想・メモなど"
-            self.impressionTextField = alertTextField
-        }
         
         // rating
         alert.addTextField { (alertTextField) in
