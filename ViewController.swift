@@ -10,7 +10,14 @@ import UIKit
 import RealmSwift
 import Cosmos
 
-class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+protocol alertController {
+    
+    func displayAddField(message: String)
+
+}
+
+
+class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
     
     lazy var cosmosView: CosmosView = {
         var view = CosmosView()
@@ -36,11 +43,13 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     private var titleFlag: Bool = false
     private var authorFlag: Bool = false
     
-    private var titleTextField = UITextField()
-    private var authorTextField = UITextField()
-    private var dateTextField = UITextField()
-    private var datePicker = UIDatePicker()
-    private var impressionTextField = UITextField()
+
+    var titleTextField = UITextField()
+    var authorTextField = UITextField()
+    var dateTextField = UITextField()
+    var datePicker = UIDatePicker()
+    
+
     
     // change color weather ios 13
     let dynamicColor = UIColor{ (traitCollection: UITraitCollection) -> UIColor in
@@ -59,6 +68,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
     }
 
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -66,6 +76,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         tableView.delegate = self
         
         loadItems(sortText: "date", flag: false)
+
+        
 
     }
 
@@ -89,9 +101,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as! ItemViewController
         
+        destinationVC.delegate = self
+        
         if let indexPath = tableView.indexPathForSelectedRow {
             destinationVC.selectedBook = books?[indexPath.row]
         }
+        
     }
 
     
@@ -195,7 +210,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let alert = UIAlertController(title: "", message: message, preferredStyle: .alert)
         
         // Create cancel button
-        let cancel = UIAlertAction(title: "取り消し", style: .cancel, handler: nil)
+        let cancel = UIAlertAction(title: "取り消し", style: .destructive, handler: nil)
 
         // Create saveButton
         let action = UIAlertAction(title: "登録", style: .default) { (action) in
@@ -229,6 +244,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             newBook.rating = self.cosmosView.rating
             
             self.save(book: newBook)
+            
+            self.loadItems(sortText: "date", flag: false)
+            
+            self.clearSortBarColor()
+            
+            self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
 
         }
         
@@ -245,10 +266,10 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 
         }
         
-        
         alert.addTextField { (alertTextField) in
             
             alertTextField.addConstraint(alertTextField.heightAnchor.constraint(equalToConstant: 20))
+            alertTextField.delegate = self
             self.dateTextField = alertTextField
             self.dateTextField.placeholder = "日付を選択"
             self.datePicker.datePickerMode = UIDatePicker.Mode.date
@@ -258,31 +279,28 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             self.setupToolbar()
             
         }
-        
+
         // rating
         alert.addTextField { (alertTextField) in
             alertTextField.addConstraint(alertTextField.heightAnchor.constraint(equalToConstant: 30))
             alertTextField.addSubview(self.cosmosView)
         }
         
-        
-        alert.addAction(action)
         alert.addAction(cancel)
+        alert.addAction(action)
 
         present(alert, animated: true, completion: nil)
         
-        
     }
     
+    
     func setupToolbar() {
-        
         let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 42))
         let cancelItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let doneItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
         toolbar.setItems([cancelItem, spaceButton,doneItem], animated: true)
         dateTextField.inputAccessoryView = toolbar
-
     }
     
     @objc func done() {
@@ -299,7 +317,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     @objc func cancel() {
         dateTextField.endEditing(true)
     }
-    
+
     
     func loadItems(sortText: String, flag: Bool) {
 
@@ -309,6 +327,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 
     }
     
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+
 
     //MARK: - Search Methods
     func filterKeyword(_ searchBar: UISearchBar) {
@@ -386,6 +410,17 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 
     }
     
+    func clearSortBarColor() {
+        
+        titleButton.backgroundColor = dynamicTintColor
+        authorButton.backgroundColor = dynamicTintColor
+        dateButton.backgroundColor = dynamicTintColor
+
+        titleButton.tintColor = dynamicColor
+        authorButton.tintColor = dynamicColor
+        authorButton.tintColor = dynamicColor
+
+    }
     
     // MARK: - Sort Methods
     
@@ -442,7 +477,6 @@ extension UIView {
     }
 
 }
-
 
 
 
