@@ -6,5 +6,5 @@
 
 # 紹介
 
-![画像名](IMG_1062.png)
+<img src="IMG_1062.png" width="320px">
 
