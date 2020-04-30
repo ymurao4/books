@@ -6,8 +6,7 @@
 
 # 紹介
 
-<img src="IMG_1062.png" width="320px">
-<img src="IMG_1063.png" width="320px">
+<img src="IMG_1062.png" width="320px"> <img src="IMG_1063.png" width="320px">
 <img src="IMG_1064.png" width="320px">
 <img src="IMG_1065.png" width="320px">
 <img src="IMG_1066.png" width="320px">
